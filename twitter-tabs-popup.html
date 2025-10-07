@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      width: 350px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    
+    h2 {
+      margin-top: 0;
+      color: #1DA1F2;
+      font-size: 18px;
+    }
+    
+    .tab-list {
+      margin: 16px 0;
+    }
+    
+    .tab-item {
+      background: #f7f9fa;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .tab-info {
+      flex: 1;
+    }
+    
+    .tab-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .tab-desc {
+      font-size: 12px;
+      color: #657786;
+    }
+    
+    .delete-btn {
+      background: #e0245e;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .delete-btn:hover {
+      background: #c41e4a;
+    }
+    
+    .add-section {
+      border-top: 1px solid #e1e8ed;
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+    
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #e1e8ed;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .btn-primary {
+      background: #1DA1F2;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+    }
+    
+    .btn-primary:hover {
+      background: #1a91da;
+    }
+    
+    .api-section {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 16px;
+    }
+    
+    .api-section h3 {
+      margin-top: 0;
+      font-size: 14px;
+      color: #856404;
+    }
+    
+    .api-section p {
+      font-size: 12px;
+      color: #856404;
+      margin: 8px 0;
+    }
+    
+    .api-key-input {
+      width: 100%;
+      padding: 6px;
+      margin-top: 8px;
+      border: 1px solid #ffc107;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Twitter Custom Topic Tabs</h2>
+  
+  <div id="tabs-container" class="tab-list">
+    <!-- Tabs will be loaded here -->
+  </div>
+  
+  <div class="add-section">
+    <h3>Add New Tab</h3>
+    <input type="text" id="new-tab-name" placeholder="Tab name">
+    <textarea id="new-tab-desc" placeholder="Description of content" rows="3"></textarea>
+    <input type="text" id="new-tab-keywords" placeholder="Keywords (comma-separated)">
+    <button class="btn-primary" id="add-tab-btn">Add Tab</button>
+  </div>
+  
+  <div class="api-section">
+    <h3>⚡ Enhanced AI Filtering (Optional)</h3>
+    <p>For better content filtering, you can add an OpenAI API key. Without it, the extension uses keyword matching.</p>
+    <input type="password" class="api-key-input" id="api-key" placeholder="OpenAI API Key (optional)">
+    <button class="btn-primary" id="save-api-btn" style="margin-top: 8px;">Save API Key</button>
+  </div>
+
+  <script>
+    // Load and display tabs
+    function loadTabs() {
+      chrome.storage.local.get(['customTabs'], (result) => {
+        const tabs = result.customTabs || [];
+        const container = document.getElementById('tabs-container');
+        
+        if (tabs.length === 0) {
+          container.innerHTML = '<p style="color: #657786; text-align: center;">No custom tabs yet</p>';
+          return;
+        }
+        
+        container.innerHTML = tabs.map((tab, index) => `
+          <div class="tab-item">
+            <div class="tab-info">
+              <div class="tab-name">${tab.name}</div>
+              <div class="tab-desc">${tab.description}</div>
+            </div>
+            <button class="delete-btn" data-index="${index}">Delete</button>
+          </div>
+        `).join('');
+        
+        // Add delete listeners
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            deleteTab(parseInt(e.target.dataset.index));
+          });
+        });
+      });
+    }
+    
+    // Add new tab
+    document.getElementById('add-tab-btn').addEventListener('click', () => {
+      const name = document.getElementById('new-tab-name').value;
+      const description = document.getElementById('new-tab-desc').value;
+      const keywords = document.getElementById('new-tab-keywords').value.split(',').map(k => k.trim()).filter(k => k);
+      
+      if (!name || !description) {
+        alert('Please provide both name and description');
+        return;
+      }
+      
+      chrome.storage.local.get(['customTabs'], (result) => {
+        const tabs = result.customTabs || [];
+        tabs.push({
+          id: name.toLowerCase().replace(/\s+/g, '-'),
+          name,
+          description,
+          keywords
+        });
+        
+        chrome.storage.local.set({ customTabs: tabs }, () => {
+          // Clear inputs
+          document.getElementById('new-tab-name').value = '';
+          document.getElementById('new-tab-desc').value = '';
+          document.getElementById('new-tab-keywords').value = '';
+          
+          // Reload tabs
+          loadTabs();
+          
+          // Notify content script
+          chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+            if (tabs[0]?.url?.includes('twitter.com') || tabs[0]?.url?.includes('x.com')) {
+              chrome.tabs.sendMessage(tabs[0].id, {action: 'updateTabs'});
+            }
+          });
+        });
+      });
+    });
+    
+    // Delete tab
+    function deleteTab(index) {
+      chrome.storage.local.get(['customTabs'], (result) => {
+        const tabs = result.customTabs || [];
+        tabs.splice(index, 1);
+        
+        chrome.storage.local.set({ customTabs: tabs }, () => {
+          loadTabs();
+          
+          // Notify content script
+          chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+            if (tabs[0]?.url?.includes('twitter.com') || tabs[0]?.url?.includes('x.com')) {
+              chrome.tabs.sendMessage(tabs[0].id, {action: 'updateTabs'});
+            }
+          });
+        });
+      });
+    }
+    
+    // Save API key
+    document.getElementById('save-api-btn').addEventListener('click', () => {
+      const apiKey = document.getElementById('api-key').value;
+      chrome.storage.local.set({ openaiApiKey: apiKey }, () => {
+        alert('API key saved!');
+        document.getElementById('api-key').value = '';
+      });
+    });
+    
+    // Load API key status
+    chrome.storage.local.get(['openaiApiKey'], (result) => {
+      if (result.openaiApiKey) {
+        document.getElementById('api-key').placeholder = 'API Key saved (enter new to update)';
+      }
+    });
+    
+    // Initial load
+    loadTabs();
+  </script>
+</body>
+</html>
