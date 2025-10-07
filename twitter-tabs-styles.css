@@ -1,0 +1,343 @@
+/* Dropdown container */
+.twitter-filter-dropdown-container {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgb(255, 255, 255);
+  border-bottom: 1px solid rgb(239, 243, 244);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Dark mode - Twitter uses different selectors */
+html[style*="color-scheme: dark"] .twitter-filter-dropdown-container,
+body[style*="background-color: rgb(0, 0, 0)"] .twitter-filter-dropdown-container,
+html.dark .twitter-filter-dropdown-container {
+  background: rgb(0, 0, 0);
+  border-bottom-color: rgb(47, 51, 54);
+}
+
+.twitter-filter-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown button */
+.filter-dropdown-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid rgb(207, 217, 222);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(15, 20, 25);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 160px;
+}
+
+html[style*="color-scheme: dark"] .filter-dropdown-button,
+body[style*="background-color: rgb(0, 0, 0)"] .filter-dropdown-button,
+html.dark .filter-dropdown-button {
+  border-color: rgb(56, 68, 77);
+  color: rgb(231, 233, 234);
+}
+
+.filter-dropdown-button:hover {
+  background: rgba(29, 155, 240, 0.1);
+  border-color: rgb(29, 155, 240);
+}
+
+/* Disabled state */
+.filter-dropdown-button.disabled {
+  background: rgb(239, 243, 244);
+  border-color: rgb(207, 217, 222);
+  color: rgb(83, 100, 113);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+html[style*="color-scheme: dark"] .filter-dropdown-button.disabled,
+body[style*="background-color: rgb(0, 0, 0)"] .filter-dropdown-button.disabled,
+html.dark .filter-dropdown-button.disabled {
+  background: rgb(32, 35, 39);
+  border-color: rgb(56, 68, 77);
+  color: rgb(113, 118, 123);
+}
+
+.filter-dropdown-button.disabled:hover {
+  background: rgb(239, 243, 244);
+  border-color: rgb(207, 217, 222);
+}
+
+html[style*="color-scheme: dark"] .filter-dropdown-button.disabled:hover,
+body[style*="background-color: rgb(0, 0, 0)"] .filter-dropdown-button.disabled:hover,
+html.dark .filter-dropdown-button.disabled:hover {
+  background: rgb(32, 35, 39);
+  border-color: rgb(56, 68, 77);
+}
+
+.filter-label {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.dropdown-arrow {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.filter-dropdown-button:hover .dropdown-arrow {
+  color: rgb(29, 155, 240);
+}
+
+.filter-dropdown-button.disabled .dropdown-arrow {
+  color: rgb(83, 100, 113);
+}
+
+html[style*="color-scheme: dark"] .filter-dropdown-button.disabled .dropdown-arrow,
+body[style*="background-color: rgb(0, 0, 0)"] .filter-dropdown-button.disabled .dropdown-arrow,
+html.dark .filter-dropdown-button.disabled .dropdown-arrow {
+  color: rgb(113, 118, 123);
+}
+
+/* Dropdown menu */
+.filter-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: rgba(101, 119, 134, 0.2) 0px 0px 15px, 
+              rgba(101, 119, 134, 0.15) 0px 0px 3px 1px;
+  min-width: 240px;
+  max-height: 400px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 1001;
+}
+
+html[style*="color-scheme: dark"] .filter-dropdown-menu,
+body[style*="background-color: rgb(0, 0, 0)"] .filter-dropdown-menu,
+html.dark .filter-dropdown-menu {
+  background: rgb(21, 32, 43);
+  box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 15px, 
+              rgba(255, 255, 255, 0.15) 0px 0px 3px 1px;
+}
+
+.filter-dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Filter options */
+.filter-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  color: rgb(15, 20, 25);
+}
+
+html[style*="color-scheme: dark"] .filter-option,
+body[style*="background-color: rgb(0, 0, 0)"] .filter-option,
+html.dark .filter-option {
+  color: rgb(231, 233, 234);
+}
+
+.filter-option:hover {
+  background: rgba(29, 155, 240, 0.1);
+}
+
+.filter-option span {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.filter-option.add-filter {
+  color: rgb(29, 155, 240);
+  font-weight: 500;
+  gap: 8px;
+}
+
+.filter-option.add-filter:hover {
+  background: rgba(29, 155, 240, 0.1);
+}
+
+/* Check icon */
+.check-icon {
+  color: rgb(29, 155, 240);
+  flex-shrink: 0;
+}
+
+.check-icon.hidden {
+  display: none;
+}
+
+/* Divider */
+.filter-divider {
+  height: 1px;
+  background: rgb(239, 243, 244);
+  margin: 4px 0;
+}
+
+html[style*="color-scheme: dark"] .filter-divider,
+body[style*="background-color: rgb(0, 0, 0)"] .filter-divider,
+html.dark .filter-divider {
+  background: rgb(47, 51, 54);
+}
+
+/* Scrollbar styling for dropdown */
+.filter-dropdown-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-dropdown-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filter-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgb(207, 217, 222);
+  border-radius: 3px;
+}
+
+html[style*="color-scheme: dark"] .filter-dropdown-menu::-webkit-scrollbar-thumb,
+body[style*="background-color: rgb(0, 0, 0)"] .filter-dropdown-menu::-webkit-scrollbar-thumb,
+html.dark .filter-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgb(56, 68, 77);
+}
+
+/* Dialog styling */
+.custom-tab-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.dialog-content {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
+html[style*="color-scheme: dark"] .dialog-content,
+body[style*="background-color: rgb(0, 0, 0)"] .dialog-content,
+html.dark .dialog-content {
+  background: rgb(21, 32, 43);
+  color: white;
+}
+
+.dialog-content h3 {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.dialog-content input,
+.dialog-content textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgb(207, 217, 222);
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: black;
+  box-sizing: border-box;
+}
+
+html[style*="color-scheme: dark"] .dialog-content input,
+html[style*="color-scheme: dark"] .dialog-content textarea,
+body[style*="background-color: rgb(0, 0, 0)"] .dialog-content input,
+body[style*="background-color: rgb(0, 0, 0)"] .dialog-content textarea,
+html.dark .dialog-content input,
+html.dark .dialog-content textarea {
+  background: rgb(39, 51, 64);
+  border-color: rgb(56, 68, 77);
+  color: white;
+}
+
+.dialog-content input:focus,
+.dialog-content textarea:focus {
+  outline: none;
+  border-color: rgb(29, 155, 240);
+}
+
+.dialog-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.dialog-buttons button {
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#cancel-tab {
+  background: rgb(239, 243, 244);
+  color: black;
+}
+
+html[style*="color-scheme: dark"] #cancel-tab,
+body[style*="background-color: rgb(0, 0, 0)"] #cancel-tab,
+html.dark #cancel-tab {
+  background: rgb(39, 51, 64);
+  color: white;
+}
+
+#save-tab {
+  background: rgb(29, 155, 240);
+  color: white;
+}
+
+#cancel-tab:hover {
+  background: rgb(215, 219, 220);
+}
+
+#save-tab:hover {
+  background: rgb(26, 140, 216);
+}
+
+/* Hide tweet animation */
+[data-testid="tweet"] {
+  transition: opacity 0.3s ease;
+}
+
+.tweet-hidden {
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+}
