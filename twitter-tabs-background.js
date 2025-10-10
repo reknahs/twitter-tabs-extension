@@ -33,7 +33,7 @@ function performKeywordAnalysis(text, tabConfig) {
   // Tab-specific heuristics
   if (tabConfig.id === "basketball") {
     const basketballTerms = [
-      "game", "score", "team", "player", "coach", "court",
+      "game", "score", "team", "player", "coach", "court", ".",
       "shot", "rebound", "assist", "quarter", "timeout", "finals"
     ];
     score += countMatches(lowerText, basketballTerms);
