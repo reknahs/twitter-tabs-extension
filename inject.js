@@ -1,12 +1,24 @@
-// inject.js - Basketball filter with proper response interception
-console.log('🏀 BASKETBALL FILTER v5.0 - Response Getter Override');
+// inject.js - Dynamic Twitter Filter with Response Interception
+console.log('🎯 DYNAMIC TWITTER FILTER v1.0');
 
-const BASKETBALL_CONFIG = {
-  keywords: ['nba', 'basketball', 'lakers', 'lebron', 'curry', 'dunk', 'playoffs', 'warriors', 'celtics', 'nets', 'heat', 'bulls', 'knicks', 'spurs', 'mavs', 'bucks', 'suns', 'sixers', 'tatum', 'giannis', 'jokic', 'embiid', 'harden', 'durant', 'kawhi', 'dame', 'luka', 'booker'],
-  terms: ['game', 'score', 'team', 'player', 'coach', 'court', 'shot', 'rebound', 'assist', 'quarter', 'timeout', 'finals', 'championship', 'playoff', 'arena', 'draft', 'trade', 'roster', 'mvp', 'points']
-};
+// Global filter state
+let CURRENT_FILTER = null;
+let FILTER_CONFIG = null;
 
-// ========== PROPER XHR RESPONSE INTERCEPTION ==========
+// Listen for filter changes from content script
+window.addEventListener('message', (event) => {
+  if (event.source !== window) return;
+  
+  if (event.data.type === 'SET_FILTER') {
+    console.log('📥 Received filter change:', event.data);
+    CURRENT_FILTER = event.data.filter;
+    FILTER_CONFIG = event.data.config;
+    
+    console.log('🔄 Filter updated:', CURRENT_FILTER, FILTER_CONFIG);
+  }
+});
+
+// ========== XHR RESPONSE INTERCEPTION ==========
 const OriginalXHR = window.XMLHttpRequest;
 const originalResponseTextGetter = Object.getOwnPropertyDescriptor(OriginalXHR.prototype, 'responseText').get;
 const originalResponseGetter = Object.getOwnPropertyDescriptor(OriginalXHR.prototype, 'response').get;
@@ -21,11 +33,9 @@ window.XMLHttpRequest = function() {
     responseIntercepted: false
   };
   
-  // Store original open/send
   const originalOpen = xhr.open;
   const originalSend = xhr.send;
   
-  // Override open to detect Twitter API calls
   xhr.open = function(method, url, ...args) {
     xhrState.url = String(url);
     xhrState.isTwitterAPI = xhrState.url.includes('HomeTimeline') || 
@@ -39,15 +49,12 @@ window.XMLHttpRequest = function() {
     return originalOpen.call(this, method, url, ...args);
   };
   
-  // Override send to set up response interception
   xhr.send = function(...args) {
     if (xhrState.isTwitterAPI) {
-      // Override response getters BEFORE the request completes
       Object.defineProperty(xhr, 'responseText', {
         get: function() {
           const original = originalResponseTextGetter.call(xhr);
           
-          // First time seeing the response - filter it
           if (original && !xhrState.responseIntercepted && xhr.readyState === 4) {
             xhrState.responseIntercepted = true;
             xhrState.originalResponse = original;
@@ -68,7 +75,6 @@ window.XMLHttpRequest = function() {
             }
           }
           
-          // Return filtered response if available
           return xhrState.filteredResponse || original;
         },
         configurable: true
@@ -76,15 +82,12 @@ window.XMLHttpRequest = function() {
       
       Object.defineProperty(xhr, 'response', {
         get: function() {
-          // If we have filtered text response, return it
-          if (xhrState.filteredResponse && xhr.responseType === '' || xhr.responseType === 'text') {
+          if (xhrState.filteredResponse && (xhr.responseType === '' || xhr.responseType === 'text')) {
             return xhrState.filteredResponse;
           }
           
-          // Otherwise use original getter
           const original = originalResponseGetter.call(xhr);
           
-          // Try to filter if it's JSON and we haven't yet
           if (original && !xhrState.responseIntercepted && xhr.readyState === 4) {
             xhrState.responseIntercepted = true;
             
@@ -117,7 +120,6 @@ window.XMLHttpRequest = function() {
   return xhr;
 };
 
-// Preserve prototype chain
 window.XMLHttpRequest.prototype = OriginalXHR.prototype;
 console.log('✅ XHR response getter override installed');
 
@@ -142,7 +144,6 @@ window.fetch = async function(resource, options) {
     return response;
   }
   
-  // Clone the response so we can read it
   const clonedResponse = response.clone();
   
   try {
@@ -154,7 +155,6 @@ window.fetch = async function(resource, options) {
     if (filteredText !== originalText) {
       console.log('✅ FETCH response filtered:', filteredText.length, 'bytes');
       
-      // Return a new response with filtered data
       return new Response(filteredText, {
         status: response.status,
         statusText: response.statusText,
@@ -173,6 +173,12 @@ console.log('✅ Fetch API override installed');
 // ========== FILTERING LOGIC ==========
 
 function filterResponse(responseText) {
+  // If no filter is active, return original
+  if (!CURRENT_FILTER || !FILTER_CONFIG) {
+    console.log('⚪ No filter active, passing through');
+    return responseText;
+  }
+
   try {
     const data = JSON.parse(responseText);
     const instructions = findInstructions(data);
@@ -199,12 +205,12 @@ function filterResponse(responseText) {
           const text = extractTweetText(entry);
           
           if (!text) {
-            filtered.push(entry); // Keep if can't extract text
+            filtered.push(entry);
             kept++;
             return;
           }
           
-          if (isBasketball(text)) {
+          if (matchesFilter(text)) {
             filtered.push(entry);
             kept++;
             console.log('✅', text.substring(0, 60));
@@ -218,7 +224,7 @@ function filterResponse(responseText) {
       }
     });
     
-    console.log(`📊 FILTER RESULT: ${total} tweets → ${kept} kept, ${removed} removed`);
+    console.log(`📊 FILTER "${FILTER_CONFIG.name}": ${total} tweets → ${kept} kept, ${removed} removed`);
     return JSON.stringify(data);
     
   } catch (e) {
@@ -228,7 +234,6 @@ function filterResponse(responseText) {
 }
 
 function findInstructions(data) {
-  // Try common Twitter API response structures
   const paths = [
     data?.data?.home?.home_timeline_urt?.instructions,
     data?.data?.home_timeline_urt?.instructions,
@@ -241,7 +246,6 @@ function findInstructions(data) {
     }
   }
   
-  // Deep search as fallback
   function search(obj, depth = 0) {
     if (depth > 6 || !obj || typeof obj !== 'object') return null;
     
@@ -267,18 +271,14 @@ function extractTweetText(entry) {
     const result = entry.content?.itemContent?.tweet_results?.result;
     if (!result) return null;
     
-    // Handle different result structures
     const legacy = result.legacy || result.tweet?.legacy;
     if (!legacy) return null;
     
-    // Get username
     const user = result.core?.user_results?.result?.legacy?.screen_name || 
                  result.tweet?.core?.user_results?.result?.legacy?.screen_name || '';
     
-    // Get tweet text
     const text = legacy.full_text || '';
     
-    // Combine and lowercase for matching
     return (user + ' ' + text).toLowerCase();
   } catch (e) {
     console.error('❌ Text extraction error:', e);
@@ -286,76 +286,42 @@ function extractTweetText(entry) {
   }
 }
 
-function isBasketball(text) {
+function matchesFilter(text) {
+  if (!FILTER_CONFIG) return false;
+  
   let score = 0;
   
   // Check keywords (higher weight)
-  for (const kw of BASKETBALL_CONFIG.keywords) {
-    if (text.includes(kw)) {
+  for (const kw of FILTER_CONFIG.keywords || []) {
+    if (text.includes(kw.toLowerCase())) {
       score += 3;
     }
   }
   
-  // Check general terms (lower weight)
-  for (const term of BASKETBALL_CONFIG.terms) {
-    if (text.includes(term)) {
+  // Check description terms (lower weight)
+  const descWords = FILTER_CONFIG.description.toLowerCase().split(/\s+/);
+  for (const word of descWords) {
+    if (word.length > 3 && text.includes(word)) {
       score += 1;
     }
   }
   
-  // Threshold: need at least 1 keyword OR multiple terms
+  // Need at least 1 keyword OR multiple description terms
   return score >= 3;
 }
 
-console.log('✅ Basketball filter ready');
+console.log('✅ Dynamic filter ready');
 
 // ========== DEBUG UTILITIES ==========
 
-window.checkPageTweets = function() {
-  const tweets = document.querySelectorAll('[data-testid="tweet"]');
-  console.log(`\n🔍 Found ${tweets.length} tweets on page`);
-  
-  let basketballCount = 0;
-  let nonBasketballCount = 0;
-  const rogueTweets = [];
-  
-  tweets.forEach((tweet, i) => {
-    const textEl = tweet.querySelector('[data-testid="tweetText"]');
-    const text = textEl ? textEl.textContent : '';
-    const user = tweet.querySelector('[data-testid="User-Name"]')?.textContent || '';
-    
-    const fullText = (user + ' ' + text).toLowerCase();
-    const passes = isBasketball(fullText);
-    
-    if (passes) {
-      basketballCount++;
-    } else {
-      nonBasketballCount++;
-      rogueTweets.push({ user, text: text.substring(0, 100) });
-      console.log(`❌ ROGUE TWEET ${i + 1}:`, text.substring(0, 80));
-    }
-  });
-  
-  console.log(`\n📊 Summary: ${basketballCount} basketball, ${nonBasketballCount} non-basketball tweets`);
-  
-  if (rogueTweets.length > 0) {
-    console.log('\n🚨 ROGUE TWEETS DETECTED:');
-    rogueTweets.forEach((t, i) => {
-      console.log(`${i + 1}. @${t.user}: ${t.text}`);
-    });
-  }
-  
-  return { basketballCount, nonBasketballCount, rogueTweets };
+window.checkCurrentFilter = function() {
+  console.log('\n🔍 Current Filter Status:');
+  console.log('Filter ID:', CURRENT_FILTER);
+  console.log('Filter Config:', FILTER_CONFIG);
 };
 
-window.testBasketball = (text) => {
-  const result = isBasketball(text.toLowerCase());
-  console.log(result ? '✅ Basketball' : '❌ Not basketball');
+window.testFilterMatch = (text) => {
+  const result = matchesFilter(text.toLowerCase());
+  console.log(result ? '✅ Matches filter' : '❌ Does not match filter');
   return result;
 };
-
-// Auto-check after page load
-setTimeout(() => {
-  console.log('\n🔍 Auto-checking page tweets...');
-  window.checkPageTweets();
-}, 5000);
