@@ -1,12 +1,135 @@
-// inject.js - Dynamic Twitter Filter with Thread Support
+// inject.js - Twitter Filter with Embedded Lightweight AI
 
-console.log('🎯 TWITTER FILTER - Thread-Aware Version');
+console.log('🎯 TWITTER FILTER - Embedded AI Version');
 
 // Global filter state
 let CURRENT_FILTER = null;
 let FILTER_CONFIG = null;
 
-// Listen for filter changes from content script
+// ========== LIGHTWEIGHT AI ENGINE ==========
+class EmbeddedAI {
+  constructor() {
+    this.vectorCache = new Map();
+  }
+
+  tokenize(text) {
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s#@]/g, ' ')
+      .split(/\s+/)
+      .filter(word => word.length > 2);
+  }
+
+  computeTF(tokens) {
+    const tf = new Map();
+    const total = tokens.length;
+    
+    for (const token of tokens) {
+      tf.set(token, (tf.get(token) || 0) + 1);
+    }
+    
+    for (const [token, count] of tf.entries()) {
+      tf.set(token, count / total);
+    }
+    
+    return tf;
+  }
+
+  createVector(tokens) {
+    const tf = this.computeTF(tokens);
+    const vector = new Map();
+    
+    for (const token of tokens) {
+      vector.set(token, (tf.get(token) || 0) * Math.log(2));
+    }
+    
+    return vector;
+  }
+
+  cosineSimilarity(vec1, vec2) {
+    let dot = 0, norm1 = 0, norm2 = 0;
+    const allTokens = new Set([...vec1.keys(), ...vec2.keys()]);
+    
+    for (const token of allTokens) {
+      const v1 = vec1.get(token) || 0;
+      const v2 = vec2.get(token) || 0;
+      dot += v1 * v2;
+      norm1 += v1 * v1;
+      norm2 += v2 * v2;
+    }
+    
+    if (norm1 === 0 || norm2 === 0) return 0;
+    return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
+  }
+
+  analyze(text, topicConfig) {
+    const tweetTokens = this.tokenize(text);
+    if (tweetTokens.length === 0) return 0;
+    
+    // Get or create topic vector
+    const cacheKey = `${topicConfig.id}-${topicConfig.keywords.join(',')}`;
+    let topicVector;
+    
+    if (this.vectorCache.has(cacheKey)) {
+      topicVector = this.vectorCache.get(cacheKey);
+    } else {
+      const topicText = `${topicConfig.name} ${topicConfig.description} ${topicConfig.keywords.join(' ')}`;
+      const topicTokens = this.tokenize(topicText);
+      topicVector = this.createVector(topicTokens);
+      this.vectorCache.set(cacheKey, topicVector);
+    }
+    
+    const tweetVector = this.createVector(tweetTokens);
+    let similarity = this.cosineSimilarity(tweetVector, topicVector);
+    
+    // Keyword boost
+    const lowerText = text.toLowerCase();
+    let keywordBoost = 0;
+    
+    for (const keyword of topicConfig.keywords || []) {
+      if (lowerText.includes(keyword.toLowerCase())) {
+        keywordBoost += 0.15;
+      }
+    }
+    
+    // Named entity boost
+    const words = text.split(/\s+/);
+    for (const word of words) {
+      if (word.length > 2 && /^[A-Z]/.test(word)) {
+        for (const keyword of topicConfig.keywords || []) {
+          if (keyword.toLowerCase().includes(word.toLowerCase())) {
+            keywordBoost += 0.1;
+            break;
+          }
+        }
+      }
+    }
+    
+    // Domain-specific terms
+    if (topicConfig.id === "basketball") {
+      const terms = ['game', 'score', 'team', 'player', 'shot', 'points', 'win'];
+      terms.forEach(term => {
+        if (lowerText.includes(term)) keywordBoost += 0.05;
+      });
+    } else if (topicConfig.id === "politics") {
+      const terms = ['government', 'vote', 'bill', 'law', 'campaign', 'policy'];
+      terms.forEach(term => {
+        if (lowerText.includes(term)) keywordBoost += 0.05;
+      });
+    } else if (topicConfig.id === "religion") {
+      const terms = ['faith', 'pray', 'church', 'god', 'blessed', 'worship'];
+      terms.forEach(term => {
+        if (lowerText.includes(term)) keywordBoost += 0.05;
+      });
+    }
+    
+    return Math.min(similarity + keywordBoost, 1.0);
+  }
+}
+
+const ai = new EmbeddedAI();
+
+// Listen for filter changes
 window.addEventListener('message', (event) => {
   if (event.source !== window) return;
   
@@ -17,13 +140,12 @@ window.addEventListener('message', (event) => {
   }
 });
 
-// Helper function to check if we're on home timeline
 function isOnHomeTimeline() {
   const path = window.location.pathname;
   return path === '/home' || path === '/';
 }
 
-// ========== XHR RESPONSE INTERCEPTION ==========
+// ========== XHR INTERCEPTION ==========
 const OriginalXHR = window.XMLHttpRequest;
 const originalResponseTextGetter = Object.getOwnPropertyDescriptor(OriginalXHR.prototype, 'responseText').get;
 const originalResponseGetter = Object.getOwnPropertyDescriptor(OriginalXHR.prototype, 'response').get;
@@ -60,11 +182,7 @@ window.XMLHttpRequest = function() {
               
               try {
                 const filtered = filterResponse(original);
-                if (filtered !== original) {
-                  xhrState.filteredResponse = filtered;
-                } else {
-                  xhrState.filteredResponse = original;
-                }
+                xhrState.filteredResponse = filtered !== original ? filtered : original;
               } catch (e) {
                 console.error('❌ Filter error:', e);
                 xhrState.filteredResponse = original;
@@ -85,22 +203,20 @@ window.XMLHttpRequest = function() {
           
           const original = originalResponseGetter.call(xhr);
           
-          if (original && xhr.readyState === 4) {
-            if (!xhrState.responseIntercepted) {
-              xhrState.responseIntercepted = true;
+          if (original && xhr.readyState === 4 && !xhrState.responseIntercepted) {
+            xhrState.responseIntercepted = true;
+            
+            try {
+              const originalText = typeof original === 'string' ? original : JSON.stringify(original);
+              xhrState.originalResponse = originalText;
               
-              try {
-                const originalText = typeof original === 'string' ? original : JSON.stringify(original);
-                xhrState.originalResponse = originalText;
-                
-                const filtered = filterResponse(originalText);
-                if (filtered !== originalText) {
-                  xhrState.filteredResponse = filtered;
-                  return xhr.responseType === 'json' ? JSON.parse(filtered) : filtered;
-                }
-              } catch (e) {
-                console.error('❌ Filter error:', e);
+              const filtered = filterResponse(originalText);
+              if (filtered !== originalText) {
+                xhrState.filteredResponse = filtered;
+                return xhr.responseType === 'json' ? JSON.parse(filtered) : filtered;
               }
+            } catch (e) {
+              console.error('❌ Filter error:', e);
             }
           }
           
@@ -118,12 +234,11 @@ window.XMLHttpRequest = function() {
 
 window.XMLHttpRequest.prototype = OriginalXHR.prototype;
 
-// ========== FETCH API INTERCEPTION ==========
+// ========== FETCH INTERCEPTION ==========
 const originalFetch = window.fetch;
 
 window.fetch = async function(resource, options) {
   const url = typeof resource === 'string' ? resource : resource.url;
-  
   const isTwitterAPI = url && url.includes('/graphql/');
   const response = await originalFetch.apply(this, arguments);
   
@@ -151,28 +266,47 @@ window.fetch = async function(resource, options) {
   return response;
 };
 
-// ========== FILTERING LOGIC ==========
-
-function filterResponse(responseText) {
-  if (!isOnHomeTimeline()) {
-    return responseText;
+// ========== KEYWORD MATCHING FUNCTION (FROM SECOND FILE) ==========
+function matchesFilter(text) {
+  if (!FILTER_CONFIG) {
+    return false;
   }
   
-  // If no filter is active, return original
-  if (!CURRENT_FILTER || !FILTER_CONFIG) {
-    window.postMessage({ type: 'FILTER_STATS', hasResults: true }, '*');
+  let score = 0;
+  
+  // Check keywords (higher weight)
+  for (const kw of FILTER_CONFIG.keywords || []) {
+    if (text.includes(kw.toLowerCase())) {
+      score += 3;
+    }
+  }
+  
+  // Check description terms (lower weight)
+  const descWords = FILTER_CONFIG.description.toLowerCase().split(/\s+/);
+  for (const word of descWords) {
+    if (word.length > 3 && text.includes(word)) {
+      score += 1;
+    }
+  }
+  
+  // Need at least 1 keyword OR multiple description terms
+  return score >= 3;
+}
+
+// ========== FILTERING LOGIC ==========
+function filterResponse(responseText) {
+  if (!isOnHomeTimeline() || !CURRENT_FILTER || !FILTER_CONFIG) {
     return responseText;
   }
 
-  console.log('🎯 Filtering with:', FILTER_CONFIG.name);
+  console.log(`🎯 Filtering with AI: "${FILTER_CONFIG.name}"`);
+  const startTime = performance.now();
 
   try {
     const data = JSON.parse(responseText);
     const instructions = findInstructions(data);
     
-    if (!instructions) {
-      return responseText;
-    }
+    if (!instructions) return responseText;
     
     let total = 0, kept = 0, removed = 0;
     
@@ -181,14 +315,13 @@ function filterResponse(responseText) {
         const filtered = [];
         
         inst.entries.forEach((entry) => {
-          // CRITICAL: Keep cursor entries - they're needed for infinite scroll
+          // Keep cursors
           if (entry.entryId?.startsWith('cursor-')) {
             filtered.push(entry);
-            console.log('✅ Kept cursor:', entry.entryId);
             return;
           }
           
-          // Keep non-tweet entries (prompts, etc.)
+          // Keep non-tweets
           if (!entry.entryId?.startsWith('tweet-') && 
               !entry.entryId?.startsWith('home-conversation-') &&
               !entry.entryId?.startsWith('conversationthread-')) {
@@ -197,115 +330,7 @@ function filterResponse(responseText) {
           }
           
           total++;
-          
-          // Handle home-conversation entries (threads)
-          if (entry.entryId?.startsWith('home-conversation-')) {
-            console.log('🧵 Checking thread:', entry.entryId);
-            
-            const items = entry.content?.items;
-            
-            if (!items || !Array.isArray(items)) {
-              filtered.push(entry);
-              kept++;
-              return;
-            }
-            
-            // Collect all text from all tweets in the thread
-            const threadTexts = [];
-            
-            items.forEach((item) => {
-              const result = item.item?.itemContent?.tweet_results?.result;
-              if (!result) return;
-              
-              const legacy = result.legacy || result.tweet?.legacy;
-              if (!legacy) return;
-              
-              const user = result.core?.user_results?.result?.legacy?.screen_name || 
-                           result.tweet?.core?.user_results?.result?.legacy?.screen_name || '';
-              const text = legacy.full_text || '';
-              const combined = (user + ' ' + text).toLowerCase();
-              
-              if (combined) {
-                threadTexts.push(combined);
-              }
-            });
-            
-            if (threadTexts.length === 0) {
-              filtered.push(entry);
-              kept++;
-              return;
-            }
-            
-            // Evaluate ALL tweets in thread together
-            const threadMatches = threadTexts.some(text => matchesFilter(text));
-            
-            if (threadMatches) {
-              filtered.push(entry);
-              kept++;
-              console.log('✅ Thread KEPT (matched filter)');
-            } else {
-              removed++;
-              console.log('❌ Thread REMOVED (no match)');
-            }
-            
-            return;
-          }
-          
-          // Handle conversationthread entries (alternative thread format)
-          if (entry.entryId?.startsWith('conversationthread-')) {
-            console.log('🧵 Checking conversationthread:', entry.entryId);
-            
-            const items = entry.content?.items;
-            
-            if (!items || !Array.isArray(items)) {
-              filtered.push(entry);
-              kept++;
-              return;
-            }
-            
-            // Collect all text from thread
-            const threadTexts = [];
-            
-            items.forEach((item) => {
-              const result = item.item?.itemContent?.tweet_results?.result;
-              if (!result) return;
-              
-              const legacy = result.legacy || result.tweet?.legacy;
-              if (!legacy) return;
-              
-              const user = result.core?.user_results?.result?.legacy?.screen_name || 
-                           result.tweet?.core?.user_results?.result?.legacy?.screen_name || '';
-              const text = legacy.full_text || '';
-              const combined = (user + ' ' + text).toLowerCase();
-              
-              if (combined) {
-                threadTexts.push(combined);
-              }
-            });
-            
-            if (threadTexts.length === 0) {
-              filtered.push(entry);
-              kept++;
-              return;
-            }
-            
-            // Evaluate thread collectively
-            const threadMatches = threadTexts.some(text => matchesFilter(text));
-            
-            if (threadMatches) {
-              filtered.push(entry);
-              kept++;
-              console.log('✅ Conversationthread KEPT');
-            } else {
-              removed++;
-              console.log('❌ Conversationthread REMOVED');
-            }
-            
-            return;
-          }
-          
-          // Handle regular tweets
-          const text = extractTweetText(entry);
+          const text = extractTextFromEntry(entry);
           
           if (!text) {
             filtered.push(entry);
@@ -313,18 +338,38 @@ function filterResponse(responseText) {
             return;
           }
           
-          const result = matchesFilter(text);
+          // PHASE 1: Keyword Check (Fast Pass) - Using exact method from second file
+          const lowerText = text.toLowerCase();
+          const keywordMatch = matchesFilter(lowerText);
           
-          if (result) {
+          if (keywordMatch) {
+            // Direct pass - keyword scoring passed, but still run AI for debugging
+            const similarity = ai.analyze(text, FILTER_CONFIG);
             filtered.push(entry);
             kept++;
+            console.log(`🚀 KEYWORD PASS (AI: ${(similarity * 100).toFixed(0)}%) - "${text.slice(0, 50)}..."`);
+            console.log(`📝 FULL TWEET TEXT:\n${text}\n${'─'.repeat(80)}`);
           } else {
-            removed++;
+            // PHASE 2: AI Semantic Analysis (Only if no keyword match)
+            const similarity = ai.analyze(text, FILTER_CONFIG);
+            const threshold = FILTER_CONFIG.keywords.length > 15 ? 0.2 : 0.25;
+            const matches = similarity > threshold;
+            
+            console.log(`🤖 AI Analysis: ${(similarity * 100).toFixed(0)}% similarity - "${text.slice(0, 50)}..."`);
+            
+            if (matches) {
+              filtered.push(entry);
+              kept++;
+              console.log(`✅ AI PASS - ${(similarity * 100).toFixed(0)}%`);
+              console.log(`📝 FULL TWEET TEXT:\n${text}\n${'─'.repeat(80)}`);
+            } else {
+              removed++;
+              console.log(`❌ FILTERED OUT - ${(similarity * 100).toFixed(0)}% (below ${(threshold * 100).toFixed(0)}% threshold)`);
+            }
           }
         });
         
-        // CRITICAL FIX: If filtering resulted in ONLY cursors (no content),
-        // keep at least one tweet to prevent Twitter from stopping pagination
+        // Ensure at least one content entry
         const contentEntries = filtered.filter(e => 
           e.entryId?.startsWith('tweet-') || 
           e.entryId?.startsWith('home-conversation-') ||
@@ -332,7 +377,6 @@ function filterResponse(responseText) {
         );
         
         if (contentEntries.length === 0 && inst.entries.length > 2) {
-          // Find first tweet/thread from original entries and keep it
           const firstContent = inst.entries.find(e => 
             e.entryId?.startsWith('tweet-') || 
             e.entryId?.startsWith('home-conversation-') ||
@@ -350,17 +394,13 @@ function filterResponse(responseText) {
       }
     });
     
-    console.log(`📊 FILTER "${FILTER_CONFIG.name}": ${total} items → ${kept} kept, ${removed} removed`);
-    console.log(`📍 Total entries in response: ${instructions.reduce((sum, inst) => sum + (inst.entries?.length || 0), 0)}`);
-    console.log(`📍 Entries after filtering: ${instructions.reduce((sum, inst) => sum + (inst.entries?.length || 0), 0)}`);
+    const elapsed = performance.now() - startTime;
+    console.log(`📊 "${FILTER_CONFIG.name}": ${total} tweets → ${kept} kept, ${removed} removed (${elapsed.toFixed(1)}ms)`);
     
-    // Notify content script about results
     window.postMessage({ 
       type: 'FILTER_STATS', 
       hasResults: kept > 0,
-      total,
-      kept,
-      removed,
+      total, kept, removed,
       filterName: FILTER_CONFIG.name
     }, '*');
     
@@ -369,6 +409,47 @@ function filterResponse(responseText) {
   } catch (e) {
     console.error('❌ Filter error:', e);
     return responseText;
+  }
+}
+
+function extractTextFromEntry(entry) {
+  // Handle threads
+  if (entry.entryId?.startsWith('home-conversation-') || 
+      entry.entryId?.startsWith('conversationthread-')) {
+    const items = entry.content?.items;
+    if (!items?.length) return null;
+    
+    const texts = [];
+    items.forEach((item) => {
+      const result = item.item?.itemContent?.tweet_results?.result;
+      const legacy = result?.legacy || result?.tweet?.legacy;
+      if (!legacy) return;
+      
+      const user = result.core?.user_results?.result?.legacy?.screen_name || 
+                   result.tweet?.core?.user_results?.result?.legacy?.screen_name || '';
+      const text = legacy.full_text || '';
+      
+      if ((user + text).trim()) {
+        texts.push(user + ' ' + text);
+      }
+    });
+    
+    return texts.join(' ');
+  }
+  
+  // Handle regular tweets
+  try {
+    const result = entry.content?.itemContent?.tweet_results?.result;
+    const legacy = result?.legacy || result?.tweet?.legacy;
+    if (!legacy) return null;
+    
+    const user = result.core?.user_results?.result?.legacy?.screen_name || 
+                 result.tweet?.core?.user_results?.result?.legacy?.screen_name || '';
+    const text = legacy.full_text || '';
+    
+    return user + ' ' + text;
+  } catch (e) {
+    return null;
   }
 }
 
@@ -405,49 +486,4 @@ function findInstructions(data) {
   return data.data ? search(data.data) : null;
 }
 
-function extractTweetText(entry) {
-  try {
-    const result = entry.content?.itemContent?.tweet_results?.result;
-    if (!result) return null;
-    
-    const legacy = result.legacy || result.tweet?.legacy;
-    if (!legacy) return null;
-    
-    const user = result.core?.user_results?.result?.legacy?.screen_name || 
-                 result.tweet?.core?.user_results?.result?.legacy?.screen_name || '';
-    
-    const text = legacy.full_text || '';
-    
-    return (user + ' ' + text).toLowerCase();
-  } catch (e) {
-    return null;
-  }
-}
-
-function matchesFilter(text) {
-  if (!FILTER_CONFIG) {
-    return false;
-  }
-  
-  let score = 0;
-  
-  // Check keywords (higher weight)
-  for (const kw of FILTER_CONFIG.keywords || []) {
-    if (text.includes(kw.toLowerCase())) {
-      score += 3;
-    }
-  }
-  
-  // Check description terms (lower weight)
-  const descWords = FILTER_CONFIG.description.toLowerCase().split(/\s+/);
-  for (const word of descWords) {
-    if (word.length > 3 && text.includes(word)) {
-      score += 1;
-    }
-  }
-  
-  // Need at least 1 keyword OR multiple description terms
-  return score >= 3;
-}
-
-console.log('✅ Thread-aware filter ready');
+console.log('✅ AI-powered filter ready (embedded engine)');
