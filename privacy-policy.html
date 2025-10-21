@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Twitter Tabs</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 { color: #1DA1F2; border-bottom: 3px solid #1DA1F2; padding-bottom: 10px; }
+        h2 { color: #2c3e50; margin-top: 30px; }
+        h3 { color: #34495e; margin-top: 20px; }
+        strong { color: #2c3e50; }
+        ul { margin: 10px 0; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Privacy Policy for Twitter Tabs</h1>
+    <p><strong>Effective Date:</strong> [10/21/25]</p>
+    
+    <h2>Introduction</h2>
+    <p>Twitter Tabs is a browser extension that filters your Twitter/X timeline by topics using custom keyword filters. This privacy policy explains how we handle data.</p>
+    
+    <h2>Data We Access</h2>
+    
+    <h3>Website Content</h3>
+    <p><strong>What:</strong> The extension accesses tweet text and usernames from your Twitter/X timeline.</p>
+    <p><strong>Why:</strong> To filter tweets based on your custom keyword preferences.</p>
+    <p><strong>How it's collected:</strong> The extension intercepts Twitter's API responses as they load in your browser, before they're displayed on your screen.</p>
+    <p><strong>Is it shared:</strong> No. All filtering happens locally in your browser.</p>
+    
+    <h2>How It's Used</h2>
+    
+    <h3>Local Content Filtering</h3>
+    <p>When you select a filter (e.g., "Tech News"), the extension:</p>
+    <ol>
+        <li>Reads each tweet's text as it loads from Twitter's servers</li>
+        <li>Compares the tweet text against your filter's keywords</li>
+        <li>Shows tweets that match your keywords</li>
+        <li>Hides tweets that don't match</li>
+        <li>Discards the tweet text immediately after filtering (nothing is stored)</li>
+    </ol>
+    
+    <h3>Filter Management</h3>
+    <p>Your custom filters are used to:</p>
+    <ul>
+        <li>Display available filter options in the dropdown menu</li>
+        <li>Apply keyword matching when you select a filter</li>
+        <li>Generate new keywords when you create a new filter (if AI generation is enabled)</li>
+    </ul>
+    
+    <h3>AI Keyword Generation (Optional)</h3>
+    <p>If you provide an API key and create a new filter:</p>
+    <ol>
+        <li>Your filter name and description are sent to Groq or OpenAI</li>
+        <li>The AI generates 50+ relevant keywords</li>
+        <li>Keywords are returned and stored locally in your browser</li>
+        <li>These keywords are used for future filtering</li>
+        <li>Keywords are cached to avoid regenerating them</li>
+    </ol>
+    <p><strong>Example:</strong> If you create a filter called "Basketball" with description "NBA, players, games", the AI might generate keywords like: "Lakers", "LeBron", "dunk", "playoff", "MVP", etc.</p>
+    
+    <h3>Preference Storage</h3>
+    <p>Your preferences are used to:</p>
+    <ul>
+        <li>Remember which filter you last selected (so it persists when you refresh)</li>
+        <li>Display your filter count in the extension popup</li>
+        <li>Restore your filtering settings across browser sessions</li>
+    </ul>
+    
+    <h2>Data We Store Locally</h2>
+    <p>The following data is stored <strong>only on your device</strong> using Chrome's local storage:</p>
+    
+    <ol>
+        <li><strong>Custom Filters</strong>
+            <ul>
+                <li>Filter names and descriptions you create</li>
+                <li>Keywords associated with each filter (either AI-generated or manually added)</li>
+            </ul>
+        </li>
+        <li><strong>User Preferences</strong>
+            <ul>
+                <li>Your last selected filter</li>
+                <li>Timestamp of last filter selection</li>
+            </ul>
+        </li>
+        <li><strong>Optional API Keys</strong> (if you choose to use AI keyword generation)
+            <ul>
+                <li>Groq API key or OpenAI API key</li>
+                <li>These are stored locally and never transmitted to us</li>
+            </ul>
+        </li>
+    </ol>
+    
+    <p><strong>Important:</strong> All this data remains on your device. We cannot access it.</p>
+    
+    <h2>Third-Party Services</h2>
+    <p>If you choose to enable AI keyword generation, the extension will make API calls to:</p>
+    <ul>
+        <li><strong>Groq API</strong> (https://groq.com) or</li>
+        <li><strong>OpenAI API</strong> (https://openai.com)</li>
+    </ul>
+    
+    <p><strong>What's sent:</strong> Only your filter name and description (e.g., "Tech News" - "AI, programming, startups")</p>
+    <p><strong>Purpose:</strong> To generate relevant keywords for filtering</p>
+    <p><strong>Your API key:</strong> You must provide your own API key. We do not collect, store, or have access to your API keys. They are stored locally in your browser.</p>
+    
+    <p><strong>Note:</strong> These third-party services have their own privacy policies:</p>
+    <ul>
+        <li>Groq Privacy Policy: https://groq.com/privacy-policy/</li>
+        <li>OpenAI Privacy Policy: https://openai.com/privacy/</li>
+    </ul>
+    
+    <h2>Data We Do NOT Collect</h2>
+    <p>We do not collect, store, or transmit:</p>
+    <ul>
+        <li>Personal information (name, email, address)</li>
+        <li>Authentication credentials (Twitter passwords)</li>
+        <li>Browsing history</li>
+        <li>User activity (clicks, scrolling)</li>
+        <li>Location data</li>
+        <li>The actual content of tweets (read and immediately discarded)</li>
+        <li>Any data to our servers (we don't have servers)</li>
+    </ul>
+    
+    <h2>Permissions Explained</h2>
+    <p><strong>Storage Permission:</strong> Required to save your filters and preferences locally on your device.</p>
+    <p><strong>Host Permissions (twitter.com, x.com):</strong> Required to:</p>
+    <ul>
+        <li>Add the filter dropdown to your Twitter timeline</li>
+        <li>Read tweet content for filtering</li>
+        <li>Apply your selected filter in real-time</li>
+    </ul>
+    
+    <h2>Data Security</h2>
+    <p>All data is stored locally in your browser using Chrome's secure storage API. Since we don't collect or transmit data, there's no risk of data breaches on our end.</p>
+    
+    <h2>Children's Privacy</h2>
+    <p>This extension is not directed to children under 13. We do not knowingly collect data from children.</p>
+    
+    <h2>Changes to This Policy</h2>
+    <p>We may update this privacy policy. Changes will be posted on this page with an updated effective date.</p>
+    
+    <h2>Data Retention</h2>
+    <p>Your filter data is stored locally until you:</p>
+    <ul>
+        <li>Delete the extension</li>
+        <li>Clear your browser data</li>
+        <li>Manually delete filters using the extension's "Clear All Data" button</li>
+    </ul>
+    
+    <h2>Your Rights</h2>
+    <p>You have full control over your data:</p>
+    <ul>
+        <li>View all stored data via the extension popup</li>
+        <li>Edit keywords for any filter</li>
+        <li>Delete individual filters</li>
+        <li>Clear all data using the "Clear All Data" button</li>
+        <li>Uninstall the extension to remove all data</li>
+    </ul>
+    
+    <h2>Contact Us</h2>
+    <p>If you have questions about this privacy policy:</p>
+    <ul>
+        <li>GitHub: [Your GitHub Repository URL]</li>
+        <li>Email: [Your Email] (optional)</li>
+    </ul>
+    
+    <hr>
+    
+    <p><strong>Summary:</strong> This extension processes Twitter content locally in your browser to filter your timeline. No data is collected or sent to us. Optional AI features require your own API key and send only filter descriptions (not tweet content) to third-party AI services.</p>
+</body>
+</html>
