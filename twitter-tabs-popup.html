@@ -1,25 +1,67 @@
+<!-- MOSTLY GENERATED WITH AI -->
+
 <!DOCTYPE html>
 <html>
 <head>
   <style>
     body {
-      width: 350px;
+      width: 400px;
       padding: 16px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #15202b;
+      color: #ffffff;
     }
     
     h2 {
       margin-top: 0;
       color: #1DA1F2;
       font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .icon-btn {
+      background: #192734;
+      border: 1px solid #38444d;
+      color: #ffffff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .icon-btn:hover {
+      background: #253341;
+      border-color: #1DA1F2;
+    }
+    
+    .icon-btn.danger {
+      border-color: #e0245e;
+      color: #e0245e;
+    }
+    
+    .icon-btn.danger:hover {
+      background: #e0245e;
+      color: white;
     }
     
     .tab-list {
       margin: 16px 0;
+      max-height: 400px;
+      overflow-y: auto;
     }
     
     .tab-item {
-      background: #f7f9fa;
+      background: #192734;
+      border: 1px solid #38444d;
       border-radius: 8px;
       padding: 12px;
       margin-bottom: 8px;
@@ -35,11 +77,40 @@
     .tab-name {
       font-weight: 600;
       margin-bottom: 4px;
+      color: #ffffff;
     }
     
     .tab-desc {
       font-size: 12px;
-      color: #657786;
+      color: #8899a6;
+    }
+    
+    .tab-keywords-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    
+    .tab-keywords {
+      font-size: 11px;
+      color: #1DA1F2;
+    }
+    
+    .view-keywords-btn {
+      background: #1DA1F2;
+      border: none;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .view-keywords-btn:hover {
+      background: #1a91da;
     }
     
     .delete-btn {
@@ -50,6 +121,8 @@
       border-radius: 16px;
       cursor: pointer;
       font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
     }
     
     .delete-btn:hover {
@@ -57,38 +130,64 @@
     }
     
     .add-section {
-      border-top: 1px solid #e1e8ed;
+      border-top: 1px solid #38444d;
       padding-top: 16px;
       margin-top: 16px;
     }
     
+    .add-section h3 {
+      font-size: 14px;
+      margin: 0 0 12px 0;
+      color: #8899a6;
+    }
+    
     input, textarea {
       width: 100%;
-      padding: 8px;
-      border: 1px solid #e1e8ed;
-      border-radius: 4px;
+      padding: 10px;
+      border: 1px solid #38444d;
+      border-radius: 6px;
       margin-bottom: 8px;
       font-size: 14px;
+      background: #253341;
+      color: #ffffff;
+      box-sizing: border-box;
+    }
+    
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #1DA1F2;
+    }
+    
+    input::placeholder, textarea::placeholder {
+      color: #657786;
     }
     
     .btn-primary {
       background: #1DA1F2;
       color: white;
       border: none;
-      padding: 8px 16px;
+      padding: 10px 16px;
       border-radius: 20px;
       cursor: pointer;
       font-weight: 600;
       width: 100%;
+      font-size: 14px;
+      transition: all 0.2s;
     }
     
     .btn-primary:hover {
       background: #1a91da;
     }
     
+    .btn-primary:disabled {
+      background: #253341;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+    
     .api-section {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
+      background: #192734;
+      border: 1px solid #38444d;
       border-radius: 8px;
       padding: 12px;
       margin-top: 16px;
@@ -97,153 +196,365 @@
     .api-section h3 {
       margin-top: 0;
       font-size: 14px;
-      color: #856404;
+      color: #1DA1F2;
     }
     
     .api-section p {
       font-size: 12px;
-      color: #856404;
+      color: #8899a6;
       margin: 8px 0;
+      line-height: 1.4;
+    }
+    
+    .api-provider {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .provider-btn {
+      flex: 1;
+      padding: 8px;
+      background: #253341;
+      border: 1px solid #38444d;
+      border-radius: 6px;
+      color: #8899a6;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .provider-btn.active {
+      background: #1DA1F2;
+      color: white;
+      border-color: #1DA1F2;
+    }
+    
+    .provider-btn:hover:not(.active) {
+      background: #2f3d4d;
     }
     
     .api-key-input {
       width: 100%;
-      padding: 6px;
+      padding: 8px;
       margin-top: 8px;
-      border: 1px solid #ffc107;
-      border-radius: 4px;
+      border: 1px solid #38444d;
+      border-radius: 6px;
+      background: #253341;
+      color: #ffffff;
+      box-sizing: border-box;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #657786;
+    }
+    
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      opacity: 0.3;
+    }
+    
+    .success-toast {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: #00ba7c;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 20000;
+    }
+    
+    .success-toast.show {
+      opacity: 1;
+    }
+    
+    .danger-zone {
+      background: #2a1a1f;
+      border: 1px solid #5a2d35;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 16px;
+    }
+    
+    .danger-zone h3 {
+      font-size: 13px;
+      color: #e0245e;
+      margin: 0 0 8px 0;
+    }
+    
+    .danger-zone p {
+      font-size: 11px;
+      color: #8899a6;
+      margin: 0 0 12px 0;
+    }
+    
+    .btn-danger {
+      background: transparent;
+      color: #e0245e;
+      border: 1px solid #e0245e;
+      padding: 8px 16px;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+    
+    .btn-danger:hover {
+      background: #e0245e;
+      color: white;
+    }
+
+    .keywords-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .keywords-modal-content {
+      background: #15202b;
+      border: 2px solid #38444d;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .keywords-modal-header {
+      padding: 16px;
+      border-bottom: 1px solid #38444d;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .keywords-modal-header h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .close-modal-btn {
+      background: #192734;
+      border: 1px solid #38444d;
+      color: #ffffff;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .close-modal-btn:hover {
+      background: #253341;
+      border-color: #1DA1F2;
+    }
+
+    .keywords-modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .keywords-stats {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat-badge {
+      background: #192734;
+      border: 1px solid #38444d;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #8899a6;
+      font-weight: 600;
+    }
+
+    .stat-badge.success {
+      border-color: #00ba7c;
+      color: #00ba7c;
+    }
+
+    .stat-badge.pending {
+      border-color: #ffad1f;
+      color: #ffad1f;
+    }
+
+    .keywords-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .keyword-chip {
+      background: #192734;
+      border: 1px solid #38444d;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      color: #ffffff;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .keyword-chip:hover {
+      background: #253341;
+    }
+
+    .delete-keyword-btn {
+      background: none;
+      border: none;
+      color: #e0245e;
+      cursor: pointer;
+      font-size: 12px;
+      padding: 0;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      transition: transform 0.1s;
+    }
+
+    .delete-keyword-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .no-keywords {
+      color: #657786;
+      font-size: 13px;
+      text-align: center;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .keywords-modal-footer {
+      padding: 16px;
+      border-top: 1px solid #38444d;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .add-keyword-section {
+      display: flex;
+      gap: 8px;
+    }
+
+    .add-keyword-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #38444d;
+      border-radius: 6px;
+      background: #253341;
+      color: #ffffff;
+      font-size: 13px;
+    }
+
+    .add-keyword-input:focus {
+      outline: none;
+      border-color: #1DA1F2;
+    }
+
+    .add-keyword-input::placeholder {
+      color: #657786;
+    }
+
+    .btn-secondary {
+      background: #192734;
+      border: 1px solid #38444d;
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-secondary:hover {
+      background: #253341;
+      border-color: #1DA1F2;
+    }
+
+    .footer-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .footer-actions button {
+      flex: 1;
     }
   </style>
 </head>
 <body>
-  <h2>Twitter Custom Topic Tabs</h2>
+  <h2>
+    Twitter Filters
+  </h2>
   
   <div id="tabs-container" class="tab-list">
     <!-- Tabs will be loaded here -->
   </div>
   
   <div class="add-section">
-    <h3>Add New Tab</h3>
-    <input type="text" id="new-tab-name" placeholder="Tab name">
-    <textarea id="new-tab-desc" placeholder="Description of content" rows="3"></textarea>
-    <input type="text" id="new-tab-keywords" placeholder="Keywords (comma-separated)">
-    <button class="btn-primary" id="add-tab-btn">Add Tab</button>
+    <h3>Add New Filter</h3>
+    <input type="text" id="new-tab-name" placeholder="Filter name (e.g., 'Tech News')">
+    <textarea id="new-tab-desc" placeholder="Description (e.g., 'AI, programming, startups')" rows="2"></textarea>
+    <p style="font-size: 12px; opacity: 0.7; margin: 8px 0;">Keywords will be automatically generated</p>
+    <button class="btn-primary" id="add-tab-btn">Generate & Add Filter</button>
   </div>
   
   <div class="api-section">
-    <h3>⚡ Enhanced AI Filtering (Optional)</h3>
-    <p>For better content filtering, you can add an OpenAI API key. Without it, the extension uses keyword matching.</p>
-    <input type="password" class="api-key-input" id="api-key" placeholder="OpenAI API Key (optional)">
+    <h3>AI Keyword Generation</h3>
+    <p>Choose an AI provider to generate 50+ keywords per filter:</p>
+    
+    <div class="api-provider">
+      <button class="provider-btn" data-provider="groq">Groq (RECOMMENDED)</button>
+      <button class="provider-btn" data-provider="openai">OpenAI</button>
+    </div>
+    
+    <input type="password" class="api-key-input" id="api-key" placeholder="Paste API key here">
     <button class="btn-primary" id="save-api-btn" style="margin-top: 8px;">Save API Key</button>
+    <p style="margin-top: 8px; font-size: 11px;">
+      Get keys: 
+      <a href="https://console.groq.com/keys" target="_blank" style="color: #1DA1F2;">Groq (FREE & FAST)</a> | 
+      <a href="https://platform.openai.com/api-keys" target="_blank" style="color: #1DA1F2;">OpenAI</a>
+    </p>
+  </div>
+  
+  <div class="danger-zone">
+    <h3>Danger Zone</h3>
+    <p>Delete all filters and cached keywords. This cannot be undone.</p>
+    <button class="btn-danger" id="clear-all-btn">Clear All Data</button>
   </div>
 
-  <script>
-    // Load and display tabs
-    function loadTabs() {
-      chrome.storage.local.get(['customTabs'], (result) => {
-        const tabs = result.customTabs || [];
-        const container = document.getElementById('tabs-container');
-        
-        if (tabs.length === 0) {
-          container.innerHTML = '<p style="color: #657786; text-align: center;">No custom tabs yet</p>';
-          return;
-        }
-        
-        container.innerHTML = tabs.map((tab, index) => `
-          <div class="tab-item">
-            <div class="tab-info">
-              <div class="tab-name">${tab.name}</div>
-              <div class="tab-desc">${tab.description}</div>
-            </div>
-            <button class="delete-btn" data-index="${index}">Delete</button>
-          </div>
-        `).join('');
-        
-        // Add delete listeners
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            deleteTab(parseInt(e.target.dataset.index));
-          });
-        });
-      });
-    }
-    
-    // Add new tab
-    document.getElementById('add-tab-btn').addEventListener('click', () => {
-      const name = document.getElementById('new-tab-name').value;
-      const description = document.getElementById('new-tab-desc').value;
-      const keywords = document.getElementById('new-tab-keywords').value.split(',').map(k => k.trim()).filter(k => k);
-      
-      if (!name || !description) {
-        alert('Please provide both name and description');
-        return;
-      }
-      
-      chrome.storage.local.get(['customTabs'], (result) => {
-        const tabs = result.customTabs || [];
-        tabs.push({
-          id: name.toLowerCase().replace(/\s+/g, '-'),
-          name,
-          description,
-          keywords
-        });
-        
-        chrome.storage.local.set({ customTabs: tabs }, () => {
-          // Clear inputs
-          document.getElementById('new-tab-name').value = '';
-          document.getElementById('new-tab-desc').value = '';
-          document.getElementById('new-tab-keywords').value = '';
-          
-          // Reload tabs
-          loadTabs();
-          
-          // Notify content script
-          chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-            if (tabs[0]?.url?.includes('twitter.com') || tabs[0]?.url?.includes('x.com')) {
-              chrome.tabs.sendMessage(tabs[0].id, {action: 'updateTabs'});
-            }
-          });
-        });
-      });
-    });
-    
-    // Delete tab
-    function deleteTab(index) {
-      chrome.storage.local.get(['customTabs'], (result) => {
-        const tabs = result.customTabs || [];
-        tabs.splice(index, 1);
-        
-        chrome.storage.local.set({ customTabs: tabs }, () => {
-          loadTabs();
-          
-          // Notify content script
-          chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-            if (tabs[0]?.url?.includes('twitter.com') || tabs[0]?.url?.includes('x.com')) {
-              chrome.tabs.sendMessage(tabs[0].id, {action: 'updateTabs'});
-            }
-          });
-        });
-      });
-    }
-    
-    // Save API key
-    document.getElementById('save-api-btn').addEventListener('click', () => {
-      const apiKey = document.getElementById('api-key').value;
-      chrome.storage.local.set({ openaiApiKey: apiKey }, () => {
-        alert('API key saved!');
-        document.getElementById('api-key').value = '';
-      });
-    });
-    
-    // Load API key status
-    chrome.storage.local.get(['openaiApiKey'], (result) => {
-      if (result.openaiApiKey) {
-        document.getElementById('api-key').placeholder = 'API Key saved (enter new to update)';
-      }
-    });
-    
-    // Initial load
-    loadTabs();
-  </script>
+  <div class="success-toast" id="toast"></div>
+
+  <script src="twitter-tabs-popup.js"></script>
 </body>
 </html>
