@@ -1,15 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "Twitter Topic Filter",
-  "version": "2.0.0",
-  "description": "Filter Twitter timeline by topic with real-time response interception",
-  "permissions": [
-    "storage"
-  ],
-  "host_permissions": [
-    "https://twitter.com/*",
-    "https://x.com/*"
-  ],
+  "name": "Twitter Tabs",
+  "version": "3.0.0",
+  "description": "Filters Twitter timeline by topic",
+  "icons": {
+    "48": "icons/favicon-96x96.png",
+    "96": "icons/favicon-96x96.png",
+    "128": "icons/apple-touch-icon.png",
+    "192": "icons/web-app-manifest-192x192.png",
+    "512": "icons/web-app-manifest-512x512.png"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://twitter.com/*", "https://x.com/*"],
   "content_scripts": [
     {
       "matches": ["https://twitter.com/*", "https://x.com/*"],
@@ -24,7 +26,8 @@
       "run_at": "document_end"
     }
   ],
-  "background": {
-    "service_worker": "twitter-tabs-background.js"
+  "action": {
+    "default_popup": "twitter-tabs-popup.html",
+    "default_title": "Twitter Tabs"
   }
 }
