@@ -30,7 +30,7 @@ Twitter Tabs will be available on the Chrome Web Store soon! Once published, you
    cd twitter-tabs
 ```
 
-2. **Set up API keys** (Optional but recommended)
+2. **Set up API keys** (All free! –– Groq highly recommended because of speed and high token counts)
    - Get a free API key from [Groq](https://console.groq.com/keys) (recommended) or [OpenAI](https://platform.openai.com/api-keys)
    - You'll enter this in the extension popup after installation
 
