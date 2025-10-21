@@ -6,6 +6,12 @@ A powerful Chrome extension that filters your Twitter/X timeline by topics using
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-orange)
 
+## 🎥 Demo
+
+[![Twitter Tabs Demo](https://www.youtube.com/watch?v=B6chD4YoaaA)
+
+Watch Twitter Tabs filter your timeline in real-time with AI-powered topic detection.
+
 ## ✨ Features
 
 - **AI-Powered Keyword Generation**: Automatically generates 50+ relevant keywords per topic using Groq or OpenAI
