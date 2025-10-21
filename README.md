@@ -1,4 +1,4 @@
-# Twitter Tabs –– Topic-Based Timeline Filter
+# Twitter Tabs: Topic-Based Timeline Filter
 
 A powerful Chrome extension that filters your Twitter/X timeline by topics using AI-generated keywords. Create custom filters to see only the content you care about.
 
