@@ -198,6 +198,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - Groq for free, fast AI inference
 - OpenAI for GPT models
 - Chrome Extensions documentation
+- AI assistance (Claude/ChatGPT) was partially used in the development of this extension
 
 ## ⚠️ Disclaimer
 
