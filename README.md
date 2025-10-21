@@ -8,7 +8,7 @@ A powerful Chrome extension that filters your Twitter/X timeline by topics using
 
 ## 🎥 Demo
 
-[![Twitter Tabs Demo](icons/web-app-manifest-512x512.png)](https://www.youtube.com/watch?v=B6chD4YoaaA)
+[![Twitter Tabs Demo](icons/thumbnail.jpg)](https://www.youtube.com/watch?v=B6chD4YoaaA)
 
 Watch Twitter Tabs filter your timeline in real-time with AI-powered topic detection.
 
