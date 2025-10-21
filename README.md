@@ -68,6 +68,12 @@ Twitter Tabs will be available on the Chrome Web Store soon! Once published, you
 5. Delete unwanted keywords
 6. Click "Save Changes"
 
+### Note
+
+1. If the Twitter algorithm does not have a decent chunk of tweets related to the requested topic, you might notice an increased amount of unrelated tweets for that topic
+2. This is because if no tweets are found on each search, the extension automatically inserts at least one tweet so infinite scroll can continue
+3. Because of this, the extension works best if about 10% or more of the timeline tweets are related to the current filter!
+
 ## 🏗️ Project Structure
 ```
 twitter-tabs/
@@ -173,6 +179,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - Filter dropdown is disabled on individual tweet pages (by design)
 - First-time keyword generation requires internet connection
 - Some tweets in threads may be filtered if any tweet matches keywords
+- Because the Twitter algorithm requires tweets for infinite scroll, if no relevant tweets are found, one unrelated tweet will be inserted
 
 ## 💬 Support
 
