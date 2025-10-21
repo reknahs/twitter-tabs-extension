@@ -70,9 +70,9 @@ Twitter Tabs will be available on the Chrome Web Store soon! Once published, you
 
 ### Note
 
-1. If the Twitter algorithm does not have a decent chunk of tweets related to the requested topic, you might notice an increased amount of unrelated tweets for that topic
-2. This is because if no tweets are found on each search, the extension automatically inserts at least one tweet so infinite scroll can continue
-3. Because of this, the extension works best if about 10% or more of the timeline tweets are related to the current filter!
+- If the Twitter algorithm does not have a decent chunk of tweets related to the requested topic, you might notice an increased amount of unrelated tweets for that topic
+- This is because if no tweets are found on each search, the extension automatically inserts at least one tweet so infinite scroll can continue
+- Because of this, the extension works best if about 10% or more of the timeline tweets are related to the current filter!
 
 ## 🏗️ Project Structure
 ```
