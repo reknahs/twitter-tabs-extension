@@ -26,7 +26,7 @@ Twitter Tabs will be available on the Chrome Web Store soon! Once published, you
 
 1. **Clone the repository**
 ```bash
-   git clone https://github.com/yourusername/twitter-tabs.git
+   git clone https://github.com/reknahs/twitter-tabs.git
    cd twitter-tabs
 ```
 
@@ -176,8 +176,8 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 💬 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/twitter-tabs/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/twitter-tabs/discussions)
+- **Issues**: [GitHub Issues](https://github.com/reknahs/twitter-tabs/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/reknahs/twitter-tabs/discussions)
 
 ## 🙏 Acknowledgments
 
