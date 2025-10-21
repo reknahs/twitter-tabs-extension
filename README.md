@@ -3,7 +3,7 @@ A powerful Chrome extension that filters your Twitter/X timeline by topics using
 
 # Features
 
-* AI-Powered Keyword Generation: Automatically generates 50+ relevant keywords per topic using Groq or OpenAI
+* **AI-Powered Keyword Generation:**Automatically generates 50+ relevant keywords per topic using Groq or OpenAI
 * Custom Topic Filters: Create unlimited filters for any topic (sports, tech, news, etc.)
 * Real-Time Filtering: Intercepts Twitter's API to filter tweets before they reach your screen
 * Dark Mode Support: Seamlessly integrates with Twitter's dark/light themes
