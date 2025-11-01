@@ -35,7 +35,7 @@ class KeywordGenerator {
     for (const api of this.apis) {
       const apiKey = await this.getApiKey(api.keyName);
 
-      // if api key has been inputted, use this api, if not move on to the next one
+      // if api key has been inputted, use this api, otherwise move on to the next one
       if (!apiKey) {
         continue;
       }
