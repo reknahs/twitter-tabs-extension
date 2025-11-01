@@ -11,7 +11,7 @@ function showToast(message) {
   }, 2000);
 }
 
-// shows all keywords for a specific filter
+// shows all the keywords for a specific filter
 function showKeywordsModal(tab) {
   const modal = document.createElement("div");
   modal.className = "keywords-modal";
