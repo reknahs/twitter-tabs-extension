@@ -1,0 +1,27 @@
+name: Zip Chrome Extension
+
+# Run this workflow on push to main or a specific branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-zip:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Zip extension files
+      run: |
+        # Make a directory for the zip output
+        mkdir -p build
+        # Zip all files in the repo, excluding git and workflow files
+        zip -r build/extension.zip * -x '*.git*' -x '*.github*' -x 'build/*'
+
+    - name: Upload ZIP artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: chrome-extension
+        path: build/extension.zip
