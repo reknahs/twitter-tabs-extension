@@ -24,7 +24,9 @@ Watch Twitter Tabs filter your timeline in real-time with AI-powered topic detec
 
 ## 🚀 Installation
 
-### Chrome Web Store (Coming Soon!)
+### Chrome Web Store (Now Available!)
+
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-Web%20Store-blue)](https://chromewebstore.google.com/detail/twitter-tabs/efcppelbeaakljllaghjaknenbbhcebe)
 
 Twitter Tabs will be available on the Chrome Web Store soon! Once published, you'll be able to install it with a single click directly from the store. Stay tuned for updates!
 
