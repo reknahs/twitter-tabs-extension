@@ -60,7 +60,7 @@ class KeywordGenerator {
       }
     }
 
-    // if all APIs, fail use local generation
+    // if all APIs fail use local generation
     const keywords = this.generateKeywordsLocally(
       topicName,
       topicDescription,
